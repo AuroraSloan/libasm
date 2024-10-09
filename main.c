@@ -6,13 +6,14 @@
 #include <fcntl.h>
 
 #define STAR "****************"
+#define BUF_SIZE 3
 
 extern size_t ft_strlen(const char *s);
 extern char *ft_strcpy(char *dst, const char*src);
 extern int ft_strcmp(const char *s1, const char *s2);
 extern ssize_t ft_write(int fd, const void *buff, size_t size);
 
-int main(int argc, char **argv)
+int main(void)
 {
 /**************FT_STRLEN*****************/
 	printf("%sFT_STRLEN%s\n", STAR, STAR);
@@ -56,19 +57,84 @@ int main(int argc, char **argv)
 	char *str = "write this string\n";
 	size_t write_len = strlen(str);
 
-	/* write(2, "write:    ", 10);
-	ssize_t bytes = write(fd, NULL, write_len);
-	printf("errno: %d\n", errno); */
+	write(2, "write:    ", 10);
+	ssize_t bytes = write(fd, str, write_len);
+	int write_errno = errno;
 
 	write(2, "ft_write: ", 10);
-	ssize_t ft_bytes = ft_write(fd, NULL, write_len);
-	printf("errno: %d\n", errno);
+	ssize_t ft_bytes = ft_write(fd, str, write_len);
+	int ft_write_errno = errno;
+	printf("%d\n", errno);
 
-	printf("|  clib   |   ft  |\n");
-	printf("|=================|\n");
-	// printf("|   %zd     |   %zd   |\n", bytes, ft_bytes);
+	printf("\n      |  clib   |   ft  |\n");
+	printf("      |=================|\n");
+	printf("bytes |   %zd     |   %zd   |\n", bytes, ft_bytes);
+	printf("errno |   %d     |   %d   |\n", write_errno, ft_write_errno);
 
 /**************FT_READ*****************/
+	printf("\n%sFT_WRITE%s\n", STAR, STAR);
+	int read_errno = 0;
+	int ft_read_errno = 0;
+	char buffer[BUF_SIZE];
+	int bytes_read;
+	char *read_file_name = "read_file";
+	char *read_content = "hello, this is in the read file\n";
+	int read_fd = open(read_file_name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+	if (read_fd == -1)
+	{
+		printf("could not open read_fd");
+	}
+	int written_bytes = write(read_fd, read_content, strlen(read_content));
+	if (written_bytes == -1)
+	{
+		printf("could not open write to read_fd");
+	}
+	close(read_fd);
+	read_fd = open(read_file_name, O_RDONLY);	
+	if (read_fd == -1)
+	{
+		printf("could not open read_fd for reading");
+	}
+	printf("read:    ");
+	while ((bytes_read = read(-5, buffer, BUF_SIZE - 1)) > 0)
+	{
+		buffer[bytes_read] = '\0';
+		printf("%s", buffer);
+	}
+	if(bytes_read == -1)
+	{
+		// printf("error reading");
+		read_errno = errno;
+	}
+
+	close(read_fd);
+	read_fd = open(read_file_name, O_RDONLY);	
+	if (read_fd == -1)
+	{
+		printf("could not open read_fd for reading");
+	}
+	printf("ft_read: ");
+	while ((bytes_read = read(-5, buffer, BUF_SIZE - 1)) > 0)
+	{
+		buffer[bytes_read] = '\0';
+		printf("%s", buffer);
+	}
+	if(bytes_read == -1)
+	{
+		// printf("error reading");
+		ft_read_errno = errno;
+	}
+	remove(read_file_name);
+
+	if (read_errno != 0)
+	{
+		printf("\nread errno:    %d\n", read_errno);
+	}
+	if (ft_read_errno != 0)
+	{
+		printf("ft_read errno: %d\n", ft_read_errno);
+	}
+
 /**************FT_STRDUP*****************/
 	return EXIT_SUCCESS;
 }

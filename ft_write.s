@@ -4,7 +4,7 @@ section .note.GNU-stack
 
 section .text
 global ft_write
-extern errno
+extern __errno_location
 
 ft_write:
 	mov rax, 1
@@ -15,6 +15,9 @@ ft_write:
 
 error:
 	neg rax
-	mov [rel errno], rax
+	mov rcx, rax
+	mov rax, [rel __errno_location wrt ..got]
+	call rax
+	mov [rax], rcx
 	mov rax, -1
 	ret
