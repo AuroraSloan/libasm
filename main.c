@@ -12,10 +12,12 @@ extern size_t ft_strlen(const char *s);
 extern char *ft_strcpy(char *dst, const char*src);
 extern int ft_strcmp(const char *s1, const char *s2);
 extern ssize_t ft_write(int fd, const void *buff, size_t size);
+extern ssize_t ft_read(int fd, const void *buff, size_t count);
+extern char *ft_strdup(const char *s);
 
-int main(void)
-{
 /**************FT_STRLEN*****************/
+void test_strlen()
+{
 	printf("%sFT_STRLEN%s\n", STAR, STAR);
 	printf("|  clib   |   ft  |\n");
 	printf("|=================|\n");
@@ -23,8 +25,11 @@ int main(void)
 	size_t len = strlen(strlenstr);
 	size_t ft_len = ft_strlen(strlenstr);
 	printf("|   %zu     |   %zu   |\n", len, ft_len);
+}
 
 /**************FT_STRCPY*****************/
+void test_strcpy()
+{
 	printf("\n%sFT_STRCPY%s\n", STAR, STAR);
 	char *strcpysrc = "yoyoyoyoyo ;laksjd fei";
 	char *strcpydst = (char *)malloc(strlen(strcpysrc) + 1);
@@ -39,8 +44,11 @@ int main(void)
 	printf("before: %s\n", strcpydst);
 	char *ft_strcpyret = ft_strcpy(strcpydst, strcpysrc);
 	printf("%p | %s\n", (void *)ft_strcpyret, strcpydst);
+}
 
 /**************FT_STRCMP*****************/
+void test_strcmp()
+{
 	printf("\n%sFT_STRCMP%s\n", STAR, STAR);
 	char *cmp1 = "aaaaaaaasaaa";
 	char *cmp2 = "aaaaaaaaaaaa";
@@ -51,7 +59,11 @@ int main(void)
 	printf("|  clib   |   ft  |\n");
 	printf("|=================|\n");
 	printf("|   %d     |   %d   |\n", ret, ft_ret);
+}
+
 /**************FT_WRITE*****************/
+void test_write()
+{
 	printf("\n%sFT_WRITE%s\n", STAR, STAR);
 	int fd = 2;
 	char *str = "write this string\n";
@@ -70,8 +82,11 @@ int main(void)
 	printf("      |=================|\n");
 	printf("bytes |   %zd     |   %zd   |\n", bytes, ft_bytes);
 	printf("errno |   %d     |   %d   |\n", write_errno, ft_write_errno);
+}
 
 /**************FT_READ*****************/
+void test_read()
+{
 	printf("\n%sFT_WRITE%s\n", STAR, STAR);
 	int read_errno = 0;
 	int ft_read_errno = 0;
@@ -134,7 +149,32 @@ int main(void)
 	{
 		printf("ft_read errno: %d\n", ft_read_errno);
 	}
+}
 
-/**************FT_STRDUP*****************/
+void test_strdup()
+{
+	char *str = "Hello this is going to be dupstr";
+
+	char *strdup_str = strdup(str);
+	int ret = memcmp(str, strdup_str, strlen(str));
+	int c_errno = errno;
+
+	char *ft_strdup_str = ft_strdup(str);
+	int ft_ret = memcmp(str, strdup_str, strlen(str));
+	int ft_errno = errno;
+
+	printf("clib: %s\n  ft: %s\n", strdup_str, ft_strdup_str);
+	printf("clib: %d\n  ft: %d\n", ret, ft_ret);
+	printf("clib: %d\n  ft: %d\n", c_errno, ft_errno);
+}
+
+int main(void)
+{
+	/* test_strlen();
+	test_strcpy();
+	test_strcmp();
+	test_write();
+	test_read();*/
+	test_strdup();
 	return EXIT_SUCCESS;
 }
