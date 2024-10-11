@@ -87,7 +87,7 @@ void test_write()
 /**************FT_READ*****************/
 void test_read()
 {
-	printf("\n%sFT_WRITE%s\n", STAR, STAR);
+	printf("\n%sFT_READ%s\n", STAR, STAR);
 	int read_errno = 0;
 	int ft_read_errno = 0;
 	char buffer[BUF_SIZE];
@@ -111,7 +111,7 @@ void test_read()
 		printf("could not open read_fd for reading");
 	}
 	printf("read:    ");
-	while ((bytes_read = read(-5, buffer, BUF_SIZE - 1)) > 0)
+	while ((bytes_read = read(read_fd, buffer, BUF_SIZE - 1)) > 0)
 	{
 		buffer[bytes_read] = '\0';
 		printf("%s", buffer);
@@ -129,7 +129,7 @@ void test_read()
 		printf("could not open read_fd for reading");
 	}
 	printf("ft_read: ");
-	while ((bytes_read = read(-5, buffer, BUF_SIZE - 1)) > 0)
+	while ((bytes_read = read(read_fd, buffer, BUF_SIZE - 1)) > 0)
 	{
 		buffer[bytes_read] = '\0';
 		printf("%s", buffer);
@@ -153,6 +153,7 @@ void test_read()
 
 void test_strdup()
 {
+	printf("\n%sFT_STRDUP%s\n", STAR, STAR);
 	char *str = "Hello this is going to be dupstr";
 
 	char *strdup_str = strdup(str);
@@ -170,11 +171,11 @@ void test_strdup()
 
 int main(void)
 {
-	/* test_strlen();
+	test_strlen();
 	test_strcpy();
 	test_strcmp();
 	test_write();
-	test_read();*/
+	test_read();
 	test_strdup();
 	return EXIT_SUCCESS;
 }
