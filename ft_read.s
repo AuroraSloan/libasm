@@ -16,8 +16,7 @@ ft_read:
 error:
 	neg rax
 	mov rcx, rax
-	mov rax, [rel __errno_location wrt ..got]
-	call rax
+	call __errno_location wrt ..plt
 	mov [rax], rcx
 	mov rax, -1
 	ret

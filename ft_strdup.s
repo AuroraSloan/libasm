@@ -8,7 +8,7 @@ extern __errno_location
 extern malloc
 
 ft_strdup:
-	mov rcx, 0
+	xor rcx, rcx
 
 get_len:
 	cmp byte [rdi + rcx], 0
@@ -20,10 +20,10 @@ alloc:
 	inc rcx
 	push rdi
 	mov rdi, rcx
-	mov rax, [rel malloc wrt ..got]
-	call rax
+	call malloc wrt ..plt
 	test rax, rax
 	je error
+
 	xor rcx, rcx
 	pop rdi
 
@@ -38,8 +38,7 @@ copy:
 error:
 	neg rax
 	mov rcx, rax
-	mov rax, [rel __errno_location wrt ..got]
-	call rax
+	call __errno_location wrt ..plt
 	mov [rax], rcx
 	mov rax, 0
 

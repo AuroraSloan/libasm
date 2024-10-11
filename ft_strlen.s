@@ -6,14 +6,14 @@ section .text
 global ft_strlen
 
 ft_strlen:
-	mov rcx, 0
+	xor rcx, rcx
 
 search_null:
 	cmp byte [rdi + rcx], 0
-	je return_value 
+	je ret
 	inc rcx
 	jmp search_null
 
-return_value:
+ret:
 	mov rax, rcx
 	ret
