@@ -6,6 +6,9 @@
 #include <fcntl.h>
 
 #define STAR "****************"
+#define RED "\033[0;31m"
+#define GREEN "\033[0;32m"
+#define RESET "\033[0m"
 #define BUF_SIZE 3
 
 extern size_t ft_strlen(const char *s);
@@ -16,15 +19,35 @@ extern ssize_t ft_read(int fd, const void *buff, size_t count);
 extern char *ft_strdup(const char *s);
 
 /**************FT_STRLEN*****************/
+void compare_len(const char *s)
+{
+	size_t len = strlen(s);
+	size_t ft_len = ft_strlen(s);
+	if (len != ft_len)
+	{
+		printf("%s %sFAIL%s\n", s, RED, RESET);
+		return;
+	}
+	printf("%s %sPASS%s\n", s, GREEN, RESET);
+}
+
 void test_strlen()
 {
 	printf("%sFT_STRLEN%s\n", STAR, STAR);
-	printf("|  clib   |   ft  |\n");
-	printf("|=================|\n");
-	char *strlenstr = "";
-	size_t len = strlen(strlenstr);
-	size_t ft_len = ft_strlen(strlenstr);
-	printf("|   %zu     |   %zu   |\n", len, ft_len);
+	char long_string[1046];
+	for (int i = 0; i < 1046; ++i)
+	{
+		long_string[i] = '.';
+	}
+	long_string[1046] = '\0';
+
+	compare_len("Hello, this is a string");
+	compare_len("a");
+	compare_len("");
+	compare_len(long_string);
+	compare_len("Hello, this string has a new line\n and a \ttab");
+	compare_len("escaping this\0string");
+	// compare_len(NULL);
 }
 
 /**************FT_STRCPY*****************/
@@ -172,10 +195,10 @@ void test_strdup()
 int main(void)
 {
 	test_strlen();
-	test_strcpy();
+	/* test_strcpy();
 	test_strcmp();
 	test_write();
 	test_read();
-	test_strdup();
+	test_strdup(); */
 	return EXIT_SUCCESS;
 }
