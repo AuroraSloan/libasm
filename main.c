@@ -25,10 +25,10 @@ void compare_len(const char *s)
 	size_t ft_len = ft_strlen(s);
 	if (len != ft_len)
 	{
-		printf("%sFAIL%s %s\n", RED, RESET, s);
+		printf("%sFAIL%s\n", RED, RESET);
 		return;
 	}
-	printf("%sPASS%s %s\n", GREEN, RESET, s);
+	printf("%sPASS%s\n", GREEN, RESET);
 }
 
 void test_strlen(const char *long_string)
@@ -66,11 +66,11 @@ void compare_cpy(const char *src)
 	// compare return and result of clib with ft
 	if (cmp == ft_cmp && ret == ft_ret)
 	{
-		printf("%sPASS%s %s\n", GREEN, RESET, src);
+		printf("%sPASS%s\n", GREEN, RESET);
 	}
 	else
 	{
-		printf("%sFAIL%s %s\n", RED, RESET, src);
+		printf("%sFAIL%s\n", RED, RESET);
 	}
 	free(dst);
 }
@@ -247,8 +247,8 @@ int main(void)
 	}
 	long_string[1046] = '\0';
 
-	/* test_strlen(long_string);
-	test_strcpy(long_string); */
+	test_strlen(long_string);
+	test_strcpy(long_string);
 	test_strcmp(long_string, long_string);
 	/* test_write();
 	test_read();
