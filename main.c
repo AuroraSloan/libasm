@@ -34,6 +34,8 @@ void compare_len(const char *s)
 void test_strlen()
 {
 	printf("%sFT_STRLEN%s\n", STAR, STAR);
+
+	// Create long string
 	char long_string[1046];
 	for (int i = 0; i < 1046; ++i)
 	{
@@ -41,13 +43,24 @@ void test_strlen()
 	}
 	long_string[1046] = '\0';
 
+	// check null
+	printf("NULL: ");
+	if (ft_strlen(NULL) == 0)
+	{
+		printf("%sPASS%s\n", GREEN, RESET);
+	}
+	else
+	{
+		printf("%sFAIL%s\n", RED, RESET);
+	}
+
+	// check strings
 	compare_len("Hello, this is a string");
 	compare_len("a");
 	compare_len("");
 	compare_len(long_string);
 	compare_len("Hello, this string has a new line\n and a \ttab");
 	compare_len("escaping this\0string");
-	// compare_len(NULL);
 }
 
 /**************FT_STRCPY*****************/
