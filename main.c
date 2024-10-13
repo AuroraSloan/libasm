@@ -31,19 +31,10 @@ void compare_len(const char *s)
 	printf("%sPASS%s %s\n", GREEN, RESET, s);
 }
 
-void test_strlen()
+void test_strlen(const char *long_string)
 {
 	printf("%sFT_STRLEN%s\n", STAR, STAR);
 
-	// Create long string
-	char long_string[1046];
-	for (int i = 0; i < 1046; ++i)
-	{
-		long_string[i] = '.';
-	}
-	long_string[1046] = '\0';
-
-	// check strings
 	compare_len("Hello, this is a string");
 	compare_len("a");
 	compare_len("");
@@ -84,19 +75,10 @@ void compare_cpy(const char *src)
 	free(dst);
 }
 
-void test_strcpy()
+void test_strcpy(const char *long_string)
 {
 	printf("\n%sFT_STRCPY%s\n", STAR, STAR);	
 
-	// Create long string
-	char long_string[1046];
-	for (int i = 0; i < 1046; ++i)
-	{
-		long_string[i] = '.';
-	}
-	long_string[1046] = '\0';
-
-	// check strings
 	compare_cpy("Hello, this is a string");
 	compare_cpy("a");
 	compare_cpy("");
@@ -106,18 +88,45 @@ void test_strcpy()
 }
 
 /**************FT_STRCMP*****************/
-void test_strcmp()
+void compare_cmp(const char *s1, const char *s2)
+{
+	int ret = strcmp(s1, s2);
+	int ft_ret = ft_strcmp(s1, s2);
+
+	if (ret != ft_ret)
+	{
+		printf("%sFAIL%s\n", RED, RESET);
+		return;
+	}
+	printf("%sPASS%s\n", GREEN, RESET);
+}
+
+void test_strcmp(char *ls1, char *ls2)
 {
 	printf("\n%sFT_STRCMP%s\n", STAR, STAR);
-	char *cmp1 = "aaaaaaaasaaa";
-	char *cmp2 = "aaaaaaaaaaaa";
 
-	int ret = strcmp(cmp1, cmp2);
-	int ft_ret = ft_strcmp(cmp1, cmp2);
-	
-	printf("|  clib   |   ft  |\n");
-	printf("|=================|\n");
-	printf("|   %d     |   %d   |\n", ret, ft_ret);
+	compare_cmp("", "");
+	compare_cmp("aaa", "aaa");
+	compare_cmp("aaa", "AAA");
+	compare_cmp("AAA", "aaa");
+	compare_cmp("baa", "aaa");
+	compare_cmp("aaa", "aba");
+	compare_cmp("aaaa", "aaa");
+	compare_cmp("aaa", "aaaa");
+	compare_cmp("aaa", "qaa");
+	compare_cmp("aaa\t", "aaa");
+	compare_cmp("aaa", "aaa\t");
+	compare_cmp(ls1, ls2);
+	ls1[1000] = 'z';
+	compare_cmp(ls1, ls2);
+	ls1[1000] = '.';
+	ls2[1001] = 'z';
+	compare_cmp(ls1, ls2);
+	ls2[1001] = '.';
+	ls1[1040] = '\0';
+	compare_cmp(ls1, ls2);
+	ls1[1040] = '.';
+	ls2[1039] = '\0';
 }
 
 /**************FT_WRITE*****************/
@@ -230,9 +239,17 @@ void test_strdup()
 
 int main(void)
 {
-	/* test_strlen();
-	test_strcpy(); */
-	test_strcmp();
+	// Create long string
+	char long_string[1046];
+	for (int i = 0; i < 1046; ++i)
+	{
+		long_string[i] = '.';
+	}
+	long_string[1046] = '\0';
+
+	/* test_strlen(long_string);
+	test_strcpy(long_string); */
+	test_strcmp(long_string, long_string);
 	/* test_write();
 	test_read();
 	test_strdup(); */

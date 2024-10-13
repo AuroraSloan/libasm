@@ -11,21 +11,18 @@ ft_strcmp:
 cmp:
 	mov al, byte [rdi + rcx]
 	cmp al, byte [rsi + rcx]
-	jb ret_less
-	ja ret_greater
+	jb ret_not_equal
+	ja ret_not_equal
 	cmp al, 0
 	je ret_equal
 	inc rcx
 	jmp cmp
 
+ret_not_equal:
+	sub al, byte[rsi + rcx]
+	movsx rax, al
+	ret
+
 ret_equal:
-	mov rax, 0
-	ret
-
-ret_less:
-	mov rax, -1
-	ret
-
-ret_greater:
-	mov rax, 1
+	xor rax, rax
 	ret
