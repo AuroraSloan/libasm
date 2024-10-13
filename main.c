@@ -25,10 +25,10 @@ void compare_len(const char *s)
 	size_t ft_len = ft_strlen(s);
 	if (len != ft_len)
 	{
-		printf("%s %sFAIL%s\n", s, RED, RESET);
+		printf("%sFAIL%s %s\n", RED, RESET, s);
 		return;
 	}
-	printf("%s %sPASS%s\n", s, GREEN, RESET);
+	printf("%sPASS%s %s\n", GREEN, RESET, s);
 }
 
 void test_strlen()
@@ -43,17 +43,6 @@ void test_strlen()
 	}
 	long_string[1046] = '\0';
 
-	// check null
-	printf("NULL: ");
-	if (ft_strlen(NULL) == 0)
-	{
-		printf("%sPASS%s\n", GREEN, RESET);
-	}
-	else
-	{
-		printf("%sFAIL%s\n", RED, RESET);
-	}
-
 	// check strings
 	compare_len("Hello, this is a string");
 	compare_len("a");
@@ -64,22 +53,56 @@ void test_strlen()
 }
 
 /**************FT_STRCPY*****************/
+void compare_cpy(const char *src)
+{
+	// allocate dst
+	char *dst = (char *)malloc(strlen(src) + 1);
+	if (dst == NULL)
+	{
+		fprintf(stderr, "%smalloc failed%s\n", RED, RESET);
+		return;
+	}
+
+	// run clib strcpy and check result of dst
+	char *ret = strcpy(dst, src);
+	int cmp = strcmp(dst, src);
+
+	// erase dst and run ft function and check restul of dst
+	memset(dst, '\0', strlen(dst));
+	char *ft_ret = ft_strcpy(dst, src);
+	int ft_cmp = strcmp(dst, src);
+
+	// compare return and result of clib with ft
+	if (cmp == ft_cmp && ret == ft_ret)
+	{
+		printf("%sPASS%s %s\n", GREEN, RESET, src);
+	}
+	else
+	{
+		printf("%sFAIL%s %s\n", RED, RESET, src);
+	}
+	free(dst);
+}
+
 void test_strcpy()
 {
-	printf("\n%sFT_STRCPY%s\n", STAR, STAR);
-	char *strcpysrc = "yoyoyoyoyo ;laksjd fei";
-	char *strcpydst = (char *)malloc(strlen(strcpysrc) + 1);
-	printf("dst address: %p\n", (void *)strcpydst);
+	printf("\n%sFT_STRCPY%s\n", STAR, STAR);	
 
-	memset(strcpydst, '\0', strlen(strcpydst));
-	printf("before: %s\n", strcpydst);
-	char *strcpyret = strcpy(strcpydst, strcpysrc);
-	printf("%p | %s\n", (void *)strcpyret, strcpydst);
+	// Create long string
+	char long_string[1046];
+	for (int i = 0; i < 1046; ++i)
+	{
+		long_string[i] = '.';
+	}
+	long_string[1046] = '\0';
 
-	memset(strcpydst, '\0', strlen(strcpydst));
-	printf("before: %s\n", strcpydst);
-	char *ft_strcpyret = ft_strcpy(strcpydst, strcpysrc);
-	printf("%p | %s\n", (void *)ft_strcpyret, strcpydst);
+	// check strings
+	compare_cpy("Hello, this is a string");
+	compare_cpy("a");
+	compare_cpy("");
+	compare_cpy(long_string);
+	compare_cpy("Hello, this string has a new line\n and a \ttab");
+	compare_cpy("escaping this\0string");
 }
 
 /**************FT_STRCMP*****************/
@@ -207,10 +230,10 @@ void test_strdup()
 
 int main(void)
 {
-	test_strlen();
-	/* test_strcpy();
+	/* test_strlen();
+	test_strcpy(); */
 	test_strcmp();
-	test_write();
+	/* test_write();
 	test_read();
 	test_strdup(); */
 	return EXIT_SUCCESS;

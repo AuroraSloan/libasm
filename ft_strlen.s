@@ -7,8 +7,6 @@ global ft_strlen
 
 ft_strlen:
 	xor rcx, rcx
-	cmp rdi, 0
-	je ret
 
 search_null:
 	cmp byte [rdi + rcx], 0
