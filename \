@@ -299,12 +299,18 @@ void compare_invalid_fd()
 	compare_write_results(info);
 }
 
-void write_to_terminal(int fd, const char *s)
+void write_to_stdout(const char *s)
 {
-	t_rwinfo info;
-	info.wbytes = write(fd, s, strlen(s));
-	info.ft_wbytes = ft_write(fd, s, strlen(s));
-	compare_write_results(info);
+	ssize_t ret = write(1, s, strlen(s));
+	ssize_t ft_ret = ft_write(1, s, strlen(s));
+	if (ret == ft_ret)
+	{
+		printf("%sPASS%s\n", GREEN, RESET);
+	}
+	else
+	{
+		printf("%sFAIL%s\n", RED, RESET);
+	}
 }
 
 void test_write(const char *long_string)
@@ -317,8 +323,13 @@ void test_write(const char *long_string)
 	compare_write("Hello, this string has a new line\n and a \ttab");
 	compare_write("escaping this\0string");
 	compare_invalid_fd();
-	write_to_terminal(1, "Hello, this is a string out\n");
-	write_to_terminal(2, "Hello, this is a string err\n");
+	write_to_stdout("Howdie\n");
+	write_to_stdout("");
+	write_to_stdout("Hello, this is a string");
+	write_to_stdout("a");	
+	write_to_stdout(long_string);
+	write_to_stdout("Hello, this string has a new line\n and a \ttab");
+	write_to_stdout("escaping this\0string");
 }
 
 /**************FT_READ*****************/
