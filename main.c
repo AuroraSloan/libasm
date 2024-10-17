@@ -32,6 +32,8 @@ typedef struct		s_rwinfo
 	int	ft_errno;
 	char	buf[BUF_SIZE];
 	char	ft_buf[BUF_SIZE];
+	char	*s;
+	char	*ft_s;
 }			t_rwinfo;
 
 int prnt_err(const char *s)
@@ -45,6 +47,7 @@ void close_and_rm_file(int fd, char *file_name)
 	if (close(fd) < 0)
 	{
 		prnt_err("Could not close file\n");
+		return;
 	}
 	if (remove(file_name) < 0)
 	{
@@ -56,6 +59,26 @@ void close_and_rm_files(t_rwinfo info)
 {
 	close_and_rm_file(info.fd, C_FILE);
 	close_and_rm_file(info.ft_fd, FT_FILE);
+}
+
+int open_files(t_rwinfo *info)
+{
+	info->fd = open(C_FILE, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+	info->ft_fd = open(FT_FILE, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+	if (info->fd < 0 || info->ft_fd < 0)
+	{
+		if (info->ft_fd < 0)
+		{
+			close_and_rm_file(info->fd, C_FILE);
+		}
+		return prnt_err("Could not open file\n");
+	}
+	return EXIT_SUCCESS;
+}
+
+ssize_t write_to_file(ssize_t (*wrt_fnc)(int, const void*, size_t), int fd, const char *s)
+{
+	return wrt_fnc(fd, s, strlen(s));
 }
 
 /**************FT_STRLEN*****************/
@@ -91,6 +114,7 @@ void compare_cpy(const char *src)
 	if (dst == NULL)
 	{
 		prnt_err("malloc failed\n");
+		return;
 	}
 
 	// run clib strcpy and check result of dst
@@ -181,31 +205,14 @@ void compare_write_results(t_rwinfo info)
 	}
 }
 
-int open_files(t_rwinfo *info)
-{
-	info->fd = open(C_FILE, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-	info->ft_fd = open(FT_FILE, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-	if (info->fd < 0 || info->ft_fd < 0)
-	{
-		if (info->ft_fd < 0)
-		{
-			close_and_rm_file(info->fd, C_FILE);
-		}
-		return prnt_err("Could not open file\n");
-	}
-	return EXIT_SUCCESS;
-}
-
 void write_to_files(t_rwinfo *info, const char *s)
 {
-	size_t len = strlen(s);
-
 	errno = 0;
-	info->wbytes = write(info->fd, s, len);
+	info->wbytes = write_to_file(write, info->fd, s);
 	info->c_errno = errno;
 
 	errno = 0;
-	info->ft_wbytes = ft_write(info->ft_fd, s, len);
+	info->ft_wbytes = write_to_file(ft_write, info->ft_fd, s);
 	info->ft_errno = errno;
 }
 
@@ -222,21 +229,7 @@ int seek_file_start(t_rwinfo info)
 	return EXIT_SUCCESS;
 }
 
-int check_read_bytes(t_rwinfo info)
-{
-	if (info.rbytes < 0)
-	{
-		return prnt_err("Read failed on fd\n");
-	}
-
-	if (info.ft_rbytes < 0)
-	{
-		return prnt_err("Read failed on ft_fd\n");
-	}
-	return EXIT_SUCCESS;
-}
-
-int compare_files(t_rwinfo *info)
+int compare_write_files(t_rwinfo *info)
 {
 	while (1)
 	{
@@ -248,9 +241,9 @@ int compare_files(t_rwinfo *info)
 			break;
 		}
 
-		if (check_read_bytes(*info) < 0)
+		if (info->rbytes < 0 || info->ft_rbytes < 0)
 		{
-			return EXIT_FAILURE;
+			return prnt_err("read failed\n");
 		}
 
 		if (info->rbytes != info->ft_rbytes
@@ -276,14 +269,12 @@ void compare_write(const char *s)
 	if (info.wbytes < 0 || info.ft_wbytes < 0)
 	{
 		compare_write_results(info);
-		close_and_rm_files(info);
-		return;
+		return close_and_rm_files(info);
 	}
 
-	if (seek_file_start(info) < 0 || compare_files(&info) < 0)
+	if (seek_file_start(info) < 0 || compare_write_files(&info) < 0)
 	{
-		close_and_rm_files(info);
-		return;
+		return close_and_rm_files(info);
 	}
 
 	compare_write_results(info);
@@ -310,6 +301,7 @@ void write_to_terminal(int fd, const char *s)
 void test_write(const char *long_string)
 {
 	printf("\n%sFT_WRITE%s\n", STAR, STAR);
+	(void)long_string;
 	compare_write("Hello, this is a string");
 	compare_write("a");
 	compare_write("");
@@ -322,105 +314,156 @@ void test_write(const char *long_string)
 }
 
 /**************FT_READ*****************/
-void test_read()
+
+void compare_read_results(t_rwinfo info)
 {
-	printf("\n%sFT_READ%s\n", STAR, STAR);
-	int read_errno = 0;
-	int ft_read_errno = 0;
-	char buffer[BUF_SIZE];
-	int bytes_read;
-	char *read_file_name = "read_file";
-	char *read_content = "hello, this is in the read file\n";
-	int read_fd = open(read_file_name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-	if (read_fd == -1)
+	if (info.rbytes == info.ft_rbytes && info.c_errno == info.ft_errno)
 	{
-		printf("could not open read_fd");
+		printf("%sPASS%s\n", GREEN, RESET);
 	}
-	int written_bytes = write(read_fd, read_content, strlen(read_content));
-	if (written_bytes == -1)
+	else
 	{
-		printf("could not open write to read_fd");
-	}
-	close(read_fd);
-	read_fd = open(read_file_name, O_RDONLY);	
-	if (read_fd == -1)
-	{
-		printf("could not open read_fd for reading");
-	}
-	printf("read:    ");
-	while ((bytes_read = read(read_fd, buffer, BUF_SIZE - 1)) > 0)
-	{
-		buffer[bytes_read] = '\0';
-		printf("%s", buffer);
-	}
-	if(bytes_read == -1)
-	{
-		// printf("error reading");
-		read_errno = errno;
-	}
-
-	close(read_fd);
-	read_fd = open(read_file_name, O_RDONLY);	
-	if (read_fd == -1)
-	{
-		printf("could not open read_fd for reading");
-	}
-	printf("ft_read: ");
-	while ((bytes_read = read(read_fd, buffer, BUF_SIZE - 1)) > 0)
-	{
-		buffer[bytes_read] = '\0';
-		printf("%s", buffer);
-	}
-	if(bytes_read == -1)
-	{
-		// printf("error reading");
-		ft_read_errno = errno;
-	}
-	remove(read_file_name);
-
-	if (read_errno != 0)
-	{
-		printf("\nread errno:    %d\n", read_errno);
-	}
-	if (ft_read_errno != 0)
-	{
-		printf("ft_read errno: %d\n", ft_read_errno);
+		printf("%sFAIL%s\n", RED, RESET);
 	}
 }
 
-void test_strdup()
+int write_to_read_files(t_rwinfo *info, const char *s)
+{
+	info->wbytes = write_to_file(write, info->fd, s);
+	info->ft_wbytes = write_to_file(write, info->ft_fd, s);
+	if (info->wbytes < 0 || info->ft_wbytes < 0)
+	{	
+		return prnt_err("unable to write to files\n");
+	}
+	return EXIT_SUCCESS;
+}
+
+int compare_read_files(t_rwinfo *info)
+{
+	while (1)
+	{
+		errno = 0;
+		info->rbytes = read(info->fd, info->buf, BUF_SIZE);
+		info->c_errno = errno;
+		errno = 0;
+		info->ft_rbytes = ft_read(info->ft_fd, info->ft_buf, BUF_SIZE);
+		info->ft_errno = errno;
+
+		if (info->rbytes == 0 && info->ft_rbytes == 0)
+		{
+			break;
+		}
+
+		if (info->rbytes < 0 || info->ft_rbytes < 0)
+		{
+			compare_read_results(*info);
+			return EXIT_FAILURE;
+		}	
+
+		if (info->rbytes != info->ft_rbytes
+			|| memcmp(info->buf, info->ft_buf, (size_t)info->rbytes) != 0)
+		{
+			printf("%sFAIL%s\n", RED, RESET);
+			return EXIT_FAILURE;
+		}
+	}
+	return EXIT_SUCCESS;
+}
+
+void compare_read(const char *s)
+{
+	t_rwinfo info;
+
+	if (open_files(&info) < 0)
+	{
+		return;
+	}
+
+	if (write_to_read_files(&info, s) < 0)
+	{
+		return close_and_rm_files(info);
+	}
+
+	if (seek_file_start(info) < 0 || compare_read_files(&info) < 0)
+	{
+		return close_and_rm_files(info);
+	}
+
+	compare_read_results(info);
+	close_and_rm_files(info);
+}
+
+void test_read(const char *long_string)
+{
+	printf("\n%sFT_READ%s\n", STAR, STAR);
+	compare_read("Hello, this is a string");
+	compare_read("a");
+	compare_read("");
+	compare_read(long_string);
+	compare_read("Hello, this string has a new line\n and a \ttab");
+	compare_read("escaping this\0string");
+}
+
+/**************FT_STRDUP*****************/
+
+void free_strings(t_rwinfo info)
+{
+	free(info.s);
+	free(info.ft_s);
+}
+
+void compare_strdup(const char *s)
+{
+	t_rwinfo info;
+	int len = strlen(s) + 1;
+
+	info.s = strdup(s);
+	info.ft_s = ft_strdup(s);
+	if (info.s == NULL)
+	{
+		prnt_err("could not allocate memory\n");
+		return;
+	}
+	if (info.ft_s == NULL)
+	{
+		free(info.s);
+		prnt_err("could not allocate memory\n");
+		return;
+	}	
+
+	if (memcmp(info.s, info.ft_s, len) != 0)
+	{
+		printf("%sFAIL%s\n", RED, RESET);
+		free_strings(info);
+		return;
+	}
+	
+	printf("%sPASS%s\n", GREEN, RESET);
+	free_strings(info);
+}
+
+void test_strdup(const char *long_string)
 {
 	printf("\n%sFT_STRDUP%s\n", STAR, STAR);
-	char *str = "Hello this is going to be dupstr";
-
-	char *strdup_str = strdup(str);
-	int ret = memcmp(str, strdup_str, strlen(str));
-	int c_errno = errno;
-
-	char *ft_strdup_str = ft_strdup(str);
-	int ft_ret = memcmp(str, strdup_str, strlen(str));
-	int ft_errno = errno;
-
-	printf("clib: %s\n  ft: %s\n", strdup_str, ft_strdup_str);
-	printf("clib: %d\n  ft: %d\n", ret, ft_ret);
-	printf("clib: %d\n  ft: %d\n", c_errno, ft_errno);
+	compare_strdup("Hello, this is a string");
+	compare_strdup("a");
+	compare_strdup("");
+	compare_strdup(long_string);
+	compare_strdup("Hello, this string has a new line\n and a \ttab");
+	compare_strdup("escaping this\0string");
 }
 
 int main(void)
 {
-	// Create long string
 	char long_string[1046];
-	for (int i = 0; i < 1046; ++i)
-	{
-		long_string[i] = '.';
-	}
+	memset(long_string, '.', 1046);
 	long_string[1046] = '\0';
 
-	/* test_strlen(long_string);
+	test_strlen(long_string);
 	test_strcpy(long_string);
-	test_strcmp(long_string, long_string); */
+	test_strcmp(long_string, long_string);
 	test_write(long_string);
-	/* test_read();
-	test_strdup(); */
+	test_read(long_string);
+	test_strdup(long_string);
 	return EXIT_SUCCESS;
 }
