@@ -9,7 +9,7 @@
 #define RED "\033[0;31m"
 #define GREEN "\033[0;32m"
 #define RESET "\033[0m"
-#define BUF_SIZE 3
+#define BUF_SIZE 1046
 #define C_FILE "c_file.txt"
 #define FT_FILE "ft_file.txt"
 
@@ -158,7 +158,7 @@ void compare_cmp(const char *s1, const char *s2)
 
 	if (ret != ft_ret)
 	{
-		printf("%sFAIL%s\n", RED, RESET);
+		printf("%sFAIL%s : ret - %d : ft - %d\n", RED, RESET, ret, ft_ret);
 		return;
 	}
 	printf("%sPASS%s\n", GREEN, RESET);
@@ -259,6 +259,8 @@ int compare_write_files(t_rwinfo *info)
 void compare_write(const char *s)
 {
 	t_rwinfo info;
+	memset(&info, 0, sizeof(t_rwinfo));
+
 
 	if (open_files(&info) < 0)
 	{
@@ -284,6 +286,7 @@ void compare_write(const char *s)
 void compare_invalid_fd()
 {
 	t_rwinfo info;
+	memset(&info, 0, sizeof(t_rwinfo));
 	info.fd = -1;
 	info.ft_fd = -1;
 	write_to_files(&info, "HEY");
@@ -293,6 +296,7 @@ void compare_invalid_fd()
 void write_to_terminal(int fd, const char *s)
 {
 	t_rwinfo info;
+	memset(&info, 0, sizeof(t_rwinfo));
 	info.wbytes = write(fd, s, strlen(s));
 	info.ft_wbytes = ft_write(fd, s, strlen(s));
 	compare_write_results(info);
@@ -373,6 +377,7 @@ int compare_read_files(t_rwinfo *info)
 void compare_read(const char *s)
 {
 	t_rwinfo info;
+	memset(&info, 0, sizeof(t_rwinfo));
 
 	if (open_files(&info) < 0)
 	{
@@ -415,6 +420,7 @@ void free_strings(t_rwinfo info)
 void compare_strdup(const char *s)
 {
 	t_rwinfo info;
+	memset(&info, 0, sizeof(t_rwinfo));
 	int len = strlen(s) + 1;
 
 	info.s = strdup(s);
@@ -456,8 +462,8 @@ void test_strdup(const char *long_string)
 int main(void)
 {
 	char long_string[1046];
-	memset(long_string, '.', 1046);
-	long_string[1046] = '\0';
+	memset(long_string, '.', 1045);
+	long_string[1045] = '\0';
 
 	test_strlen(long_string);
 	test_strcpy(long_string);
