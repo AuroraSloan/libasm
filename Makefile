@@ -1,3 +1,5 @@
+.PHONY: all debug leakcheck clean fclean re
+
 NAME := libasm.a
 
 ASM := nasm
@@ -52,5 +54,3 @@ fclean: clean
 	rm -rf $(NAME) $(LIBASM_TEST)
 
 re: fclean all
-
-.PHONY: all debug leakcheck clean fclean re
