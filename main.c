@@ -156,12 +156,15 @@ void compare_cmp(const char *s1, const char *s2)
 	int ret = strcmp(s1, s2);
 	int ft_ret = ft_strcmp(s1, s2);
 
-	if (ret != ft_ret)
+	if ((ret < 0 && ft_ret < 0)
+		|| (ret > 0 && ft_ret > 0)
+		|| (ret == 0 && ft_ret == 0))
 	{
-		printf("%sFAIL%s : ret - %d : ft - %d\n", RED, RESET, ret, ft_ret);
+		printf("%sPASS%s\n", GREEN, RESET);
 		return;
 	}
-	printf("%sPASS%s\n", GREEN, RESET);
+	printf("%sFAIL%s : ret %d : ft %d\n", RED, RESET, ret, ft_ret);
+	
 }
 
 void test_strcmp(char *ls1, char *ls2)

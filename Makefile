@@ -1,33 +1,47 @@
 NAME := libasm.a
-CC := gcc
+
 ASM := nasm
-CFLAG := -Wall -Wextra -Werror -fpie -pie
 ASMFLAG := -f elf64
-SRC := $(wildcard *.s)
-OBJ := $(SRC:.s=.o)
-TEST := main.c
+ASM_SRC := $(wildcard *.s)
+ASM_OBJ := $(ASM_SRC:.s=.o)
+
+CC := gcc
+CFLAG := -Wall -Wextra -Werror -fpie -pie
+SRC := $(wildcard *.c)
+OBJ := $(SRC:.c=.o)
+
+LIBASM_TEST := libasm_test
+
+ifdef DEBUG
+	CFLAG += -g -o0
+endif
 
 %.o: %.s
 	$(ASM) $(ASMFLAG) $< -o $@
 
-all :$(NAME)
+%.o: %.c
+	$(CC) $(CFLAG) -c $< -o $@
 
-$(NAME): $(OBJ)
-	ar rc $(NAME) $(OBJ)
+all: $(LIBASM_TEST)
+
+$(NAME): $(ASM_OBJ)
+	ar rc $(NAME) $(ASM_OBJ)
 	ranlib $(NAME)
 
-test: $(NAME)
-	$(CC) $(CFLAG) $(TEST) $(NAME) -o test && ./test
+$(LIBASM_TEST): $(NAME) $(OBJ)
+	$(CC) $(CFLAG) $(OBJ) $(NAME) -o $(LIBASM_TEST)
 
-clean-test:
-	rm -rf test
+test-mem:
+	make fclean
+	make DEBUG=1
+	valgrind --leak-check=full -s ./$(LIBASM_TEST)
 
 clean:
-	rm -rf $(OBJ)
+	rm -rf $(ASM_OBJ) $(OBJ)
 
 fclean: clean
-	rm -rf $(NAME)
+	rm -rf $(NAME) $(LIBASM_TEST)
 
 re: fclean all
 
-.PHONY: all clean fclean re bonus test clean-test
+.PHONY: all test-mem clean fclean re
