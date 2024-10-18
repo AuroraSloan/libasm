@@ -13,6 +13,10 @@ OBJ := $(SRC:.c=.o)
 LIBASM_TEST := libasm_test
 
 ifdef DEBUG
+	CFLAG += -fsanitize=address -g -o0
+endif
+
+ifdef LEAKCHECK
 	CFLAG += -g -o0
 endif
 
@@ -31,9 +35,14 @@ $(NAME): $(ASM_OBJ)
 $(LIBASM_TEST): $(NAME) $(OBJ)
 	$(CC) $(CFLAG) $(OBJ) $(NAME) -o $(LIBASM_TEST)
 
-test-mem:
+debug:
 	make fclean
 	make DEBUG=1
+	./$(LIBASM_TEST)	
+
+leakcheck:
+	make fclean
+	make LEAKCHECK=1
 	valgrind --leak-check=full -s ./$(LIBASM_TEST)
 
 clean:
@@ -44,4 +53,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all test-mem clean fclean re
+.PHONY: all debug leakcheck clean fclean re
