@@ -78,7 +78,13 @@ int open_files(t_rwinfo *info)
 
 ssize_t write_to_file(ssize_t (*wrt_fnc)(int, const void*, size_t), int fd, const char *s)
 {
-	return wrt_fnc(fd, s, strlen(s));
+	int len = 0;
+
+	if (s)
+	{
+		len = strlen(s);
+	}
+	return wrt_fnc(fd, s, len);
 }
 
 /**************FT_STRLEN*****************/
@@ -308,13 +314,13 @@ void write_to_terminal(int fd, const char *s)
 void test_write(const char *long_string)
 {
 	printf("\n%sFT_WRITE%s\n", STAR, STAR);
-	(void)long_string;
 	compare_write("Hello, this is a string");
 	compare_write("a");
 	compare_write("");
 	compare_write(long_string);
 	compare_write("Hello, this string has a new line\n and a \ttab");
 	compare_write("escaping this\0string");
+	compare_write(NULL);
 	compare_invalid_fd();
 	write_to_terminal(1, "Hello, this is a string out\n");
 	write_to_terminal(2, "Hello, this is a string err\n");
@@ -410,6 +416,7 @@ void test_read(const char *long_string)
 	compare_read(long_string);
 	compare_read("Hello, this string has a new line\n and a \ttab");
 	compare_read("escaping this\0string");
+	compare_read(NULL);
 }
 
 /**************FT_STRDUP*****************/
