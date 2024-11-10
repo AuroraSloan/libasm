@@ -6,7 +6,14 @@
 #define GREEN "\033[0;32m"
 #define RESET "\033[0m"
 
-extern int ft_atoi_base(char *str, char *base);
+typedef struct		s_list
+{
+	struct s_list	*next;
+	void		*data;
+}			t_list;
+
+extern int 	ft_atoi_base(char *str, char *base);
+extern void	ft_list_push_front(t_list **begin_list, void *data);
 
 void compare_atoi_base(char *str, char *base, int cmp)
 {
