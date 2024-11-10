@@ -5,7 +5,8 @@ section .not.GNU-stack
 section .text
 global ft_list_sort
 
-%define t_list_next_offset 0
+%define t_list_data_offset 0
+%define t_list_next_offset 8
 
 ;r8 head
 ;r9 cmp func

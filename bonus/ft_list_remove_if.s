@@ -5,7 +5,8 @@ section .note.GNU-stack
 section .text
 global ft_list_remove_if
 
-%define t_list_next_offset 0
+%define t_list_data_offset 0
+%define t_list_next_offset 8
 
 ft_list_remove_if:
 	mov r8, rdi ;head

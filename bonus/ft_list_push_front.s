@@ -5,8 +5,8 @@ section .note.GNU-stack
 section .text
 global ft_list_push_front
 
-%define t_list_next_offset 0
-%define t_list_data_offset 8
+%define t_list_data_offset 0
+%define t_list_next_offset 8
 %define t_list_size 16
 %define ENOMEM 12
 
