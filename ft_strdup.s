@@ -22,11 +22,11 @@ alloc:
 	push rdi
 	mov rdi, rcx
 	call malloc wrt ..plt
+	pop rdi
 	test rax, rax
 	jz error
 
 	xor rcx, rcx
-	pop rdi
 
 copy:
 	mov sil, byte [rdi + rcx]
