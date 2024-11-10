@@ -6,6 +6,7 @@ section .text
 global ft_strdup
 extern __errno_location
 extern malloc
+%define ENOMEM 12
 
 ft_strdup:
 	xor rcx, rcx
@@ -22,7 +23,7 @@ alloc:
 	mov rdi, rcx
 	call malloc wrt ..plt
 	test rax, rax
-	je error
+	jz error
 
 	xor rcx, rcx
 	pop rdi
@@ -36,10 +37,8 @@ copy:
 	jmp copy
 
 error:
-	neg rax
-	mov rcx, rax
 	call __errno_location wrt ..plt
-	mov [rax], rcx
+	mov qword [rax], ENOMEM
 	mov rax, 0
 
 end:
