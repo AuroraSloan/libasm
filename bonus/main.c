@@ -14,6 +14,7 @@ typedef struct		s_list
 
 extern int 	ft_atoi_base(char *str, char *base);
 extern void	ft_list_push_front(t_list **begin_list, void *data);
+extern int	ft_list_size(t_list *begin_list);
 
 void compare_atoi_base(char *str, char *base, int cmp)
 {
