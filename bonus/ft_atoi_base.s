@@ -2,15 +2,43 @@ BITS 64
 
 section .note.GNU-stack
 
-section .data
-num dq 0
-sign db 1
-
 section .text
 global ft_atoi_base
 
 ft_atoi_base:
+	xor rcx, rcx ;i
+	xor rax, rax ;num
+	xor r8, r8 ;base
+	mov r9, 1 ;sign
+	xor r10, r10 ;char
+
+isbase:
+	cmp byte [rsi + rcx], '0'
+	jb err
+
+	cmp byte [rsi + rcx], '9'
+	ja err
+
+get_base:
+	mov r10b, byte [rsi + rcx]
+	sub r10b, '0'
+	imul rax, rax, 10
+	add al, r10b
+
+	cmp rax, 36 ;max base
+	ja err
+
+	inc rcx
+	cmp byte [rsi + rcx], 0
+	jne isbase
+
+	cmp rax, 2 ;min base
+	jb err
+
+	mov r8, rax
+	xor rax, rax
 	xor rcx, rcx
+	xor r10, r10
 
 isspace:
 	cmp byte [rdi + rcx], 0
@@ -33,69 +61,58 @@ incspace:
 
 check_sign:
 	cmp byte [rdi + rcx], '+'
-	je pos
+	je inc_rcx	
 
 	cmp byte [rdi + rcx], '-'
-	je neg 
+	jne check_char
+	mov r9, -1 ;sign
 
-	jmp check_char
-
-pos:
-	inc rcx
-	jmp check_char
-
-neg:
-	mov byte [rel sign], -1
+inc_rcx:
 	inc rcx
 
 check_char:
-	cmp byte [rdi + rcx], '0'
-	jb ret
-	cmp byte [rdi + rcx], '9'
-	jna make_num
+	cmp byte [rdi + rcx], 0
+	je ret
 
+	mov r10b, byte [rdi + rcx]
+	sub r10b, '0'
+	cmp r10b, 0
+	jl ret
+	cmp r10b, 10
+	jl make_num
 
-	cmp byte [rdi + rcx], 'A'
-	jb ret
-	cmp byte [rdi + rcx], 'Z'
-	jna make_num
+	mov r10b, byte [rdi + rcx]
+	sub r10b, 'A'
+	add r10b, 10
+	cmp r10b, 10
+	jl ret
+	cmp r10b, r8b
+	jl make_num
 
-	cmp byte [rdi + rcx], 'a'
-	jb ret
-	cmp byte [rdi + rcx], 'z'
-	jna make_num
+	mov r10b, byte [rdi + rcx]
+	sub r10b, 'a'
+	add r10b, 10
+	cmp r10b, 10
+	jl ret
+	cmp r10b, r8b
+	jl make_num
 
 	jmp ret
 
 make_num:
-	xor rdx, rdx
-	mov dl, byte [rdi + rcx]
-	sub rdx, '0'
+	imul rax, r8
+	add al, r10b
 
-	xor rax, rax
-	mov rax, qword [rel num]
-	imul rsi
-	mov qword [rel num], rax
-	add qword [rel num], rdx
-
-	cmp qword [rel num], 0
+	cmp rax, 0
 	jl err
 
 	inc rcx
-	cmp byte [rdi + rcx], 0
-	je ret
 	jmp check_char
 
 ret:
-	xor rax, rax
-	mov rax, qword [rel num]
-	imul byte [rel sign]
+	imul rax, r9
 	ret
 
 err:
 	xor rax, rax
-	add byte [rel sign], 1
-	mov al, byte [rel sign]
-	xor rdx, rdx
-	mov rbx, -2
-	idiv rbx
+	ret
