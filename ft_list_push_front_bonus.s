@@ -23,7 +23,7 @@ ft_list_push_front:
 	jz err
 
 	;set next and data
-	mov r8, rdi
+	mov r8, [rdi]
 	mov [rax + t_list_next_offset], r8
 	mov [rax + t_list_data_offset], rsi
 	mov [rdi], rax
