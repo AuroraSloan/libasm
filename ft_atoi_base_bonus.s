@@ -65,10 +65,11 @@ check_sign:
 
 	cmp byte [rdi + rcx], '-'
 	jne check_char
-	mov r9, -1 ;sign
+	imul r9, -1 ;sign
 
 inc_rcx:
 	inc rcx
+	jmp check_sign
 
 check_char:
 	cmp byte [rdi + rcx], 0
