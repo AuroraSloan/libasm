@@ -15,9 +15,11 @@ extern malloc
 
 ft_list_push_front:
 	push rdi
+	push rsi
 
 	mov rdi, t_list_size
 	call malloc wrt ..plt
+	pop rsi
 	pop rdi
 	test rax, rax
 	jz err
