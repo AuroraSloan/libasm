@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define STAR "****************"
 #define RED "\033[0;31m"
@@ -27,16 +28,6 @@ void compare_atoi_base(char *str, char *base, int cmp)
 		return;
 	}
 	printf("%sFAIL%s - %d\n", RED, RESET, num);
-}
-
-void print_compare_size(int size, int cmp)
-{
-	if (size == cmp)
-	{
-		printf("%sPASS%s\n", GREEN, RESET);
-		return;
-	}
-	printf("%sFAIL%s - s:%d - c:%d\n", RED, RESET, size, cmp);
 }
 
 void test_atoi_base()
@@ -104,8 +95,77 @@ void test_atoi_base()
 	compare_atoi_base("-Z", "36", -35);
 }
 
+void clear_list(t_list *list)
+{
+	while (list->next)
+	{
+		t_list *next = list->next;
+		free(list);
+		list = next;
+	}
+	free(list);
+}
+
+void print_list(t_list *list)
+{
+	t_list *lst = list;
+	while (lst)
+	{
+		printf("%s\n", (char *)lst->data);
+		lst = lst->next;
+	}
+}
+
+void check_push_and_size(t_list *list, char *word, int size)
+{
+	char *first_word = (char *)list->data;
+	if (ft_list_size(list) == size && strcmp(first_word, word) == 0)
+	{
+		printf("%sPASS%s\n", GREEN, RESET);
+		return;
+	}
+	printf("%sFAIL%s\n", RED, RESET);
+}
+
+
+void test_push_and_size(t_list **list)
+{
+	char *hey = "hey";
+	char *this = "this";
+	char *is = "is";
+	char *not = "not";
+	char *in = "in";
+	char *abc = "alphabetical";
+	char *order = "order";
+	char *nottwo = "not";
+
+	printf("\n%sFT_LIST_PUSH_FRONT%s\n", STAR, STAR);
+	
+	ft_list_push_front(list, hey);
+	check_push_and_size(*list, hey, 1);
+	ft_list_push_front(list, this);
+	check_push_and_size(*list, this, 2);
+	ft_list_push_front(list, is);
+	check_push_and_size(*list, is, 3);
+	ft_list_push_front(list, not);
+	check_push_and_size(*list, not, 4);
+	ft_list_push_front(list, in);
+	check_push_and_size(*list, in, 5);
+	ft_list_push_front(list, abc);
+	check_push_and_size(*list, abc, 6);
+	ft_list_push_front(list, order);
+	check_push_and_size(*list, order, 7);
+	ft_list_push_front(list, nottwo);
+	check_push_and_size(*list, nottwo, 8);
+	clear_list(*list);	
+}
+
 int main(void)
 {
-	test_atoi_base();
+	t_list *list;
+	list = NULL;
+
+	// test_atoi_base();
+	test_push_and_size(&list);
 	return EXIT_SUCCESS;
 }
