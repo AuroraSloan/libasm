@@ -181,6 +181,9 @@ int main(void)
 	// test_atoi_base();
 	test_push_and_size(&list);
 	print_list(list);
+	ft_list_sort(&list, strcmp);
+	printf("sorting...\n");
+	print_list(list);
 	clear_list(list);
 	return EXIT_SUCCESS;
 }
