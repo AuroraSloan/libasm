@@ -52,9 +52,12 @@ leakcheck: fclean
 	valgrind --leak-check=full -s ./$(LIBASM_TEST)
 
 bonus:
-	$(MAKE) DEBUG=1 $(LIBASM_TEST_B)
+	$(MAKE) DEBUG=1 SANITIZE=1 $(LIBASM_TEST_B)
 	./$(LIBASM_TEST_B)
 
+bonus-leakcheck:
+	$(MAKE) DEBUG=1 $(LIBASM_TEST_B)
+	valgrind --leak-check=full -s ./$(LIBASM_TEST_B)
 clean:
 	rm -rf $(ASM_OBJ) $(OBJ) $(OBJ_B)
 
