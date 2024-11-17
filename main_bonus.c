@@ -97,13 +97,13 @@ void test_atoi_base()
 
 void clear_list(t_list *list)
 {
-	while (list->next)
+	t_list *node = NULL;
+	while (list)
 	{
-		t_list *next = list->next;
-		free(list);
-		list = next;
+		node = list;
+		list = list->next;
+		free(node);
 	}
-	free(list);
 }
 
 void print_list(t_list *list)
@@ -127,6 +127,16 @@ void check_push_and_size(t_list *list, char *word, int size)
 	printf("%sFAIL%s\n", RED, RESET);
 }
 
+void check_size_edgecase(t_list *list)
+{
+	if (ft_list_size(list) == 0
+		&& ft_list_size(NULL) == 0)
+	{
+		printf("%sPASS%s\n", GREEN, RESET);
+		return;
+	}
+	printf("%sFAIL%s\n", RED, RESET);
+}
 
 void test_push_and_size(t_list **list)
 {
@@ -141,23 +151,26 @@ void test_push_and_size(t_list **list)
 
 	printf("\n%sFT_LIST_PUSH_FRONT%s\n", STAR, STAR);
 	
+	check_size_edgecase(*list);
 	ft_list_push_front(list, hey);
 	check_push_and_size(*list, hey, 1);
 	ft_list_push_front(list, this);
 	check_push_and_size(*list, this, 2);
 	ft_list_push_front(list, is);
 	check_push_and_size(*list, is, 3);
+	ft_list_push_front(NULL, hey);
 	ft_list_push_front(list, not);
 	check_push_and_size(*list, not, 4);
 	ft_list_push_front(list, in);
 	check_push_and_size(*list, in, 5);
+	ft_list_push_front(list, NULL);
 	ft_list_push_front(list, abc);
 	check_push_and_size(*list, abc, 6);
 	ft_list_push_front(list, order);
 	check_push_and_size(*list, order, 7);
+	ft_list_push_front(NULL, NULL);
 	ft_list_push_front(list, nottwo);
 	check_push_and_size(*list, nottwo, 8);
-	clear_list(*list);	
 }
 
 int main(void)
@@ -167,5 +180,7 @@ int main(void)
 
 	// test_atoi_base();
 	test_push_and_size(&list);
+	print_list(list);
+	clear_list(list);
 	return EXIT_SUCCESS;
 }
