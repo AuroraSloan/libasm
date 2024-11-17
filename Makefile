@@ -55,7 +55,7 @@ bonus:
 	$(MAKE) DEBUG=1 SANITIZE=1 $(LIBASM_TEST_B)
 	./$(LIBASM_TEST_B)
 
-bonus-leakcheck:
+bonus-leakcheck: fclean
 	$(MAKE) DEBUG=1 $(LIBASM_TEST_B)
 	valgrind --leak-check=full -s ./$(LIBASM_TEST_B)
 clean:
