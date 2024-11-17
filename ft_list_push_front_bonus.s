@@ -14,24 +14,31 @@ extern __errno_location
 extern malloc
 
 ft_list_push_front:
+	test rdi, rdi
+	jz err
+	test rsi, rsi
+	jz err
+
 	push rdi
 	push rsi
 
 	mov rdi, t_list_size
 	call malloc wrt ..plt
+
 	pop rsi
 	pop rdi
 	test rax, rax
-	jz err
+	jz sys_err
 
-	;set next and data
 	mov r8, [rdi]
 	mov [rax + t_list_next_offset], r8
 	mov [rax + t_list_data_offset], rsi
 	mov [rdi], rax
 	ret
 
-err:
+sys_err:
 	call __errno_location wrt ..plt
 	mov qword [rax], ENOMEM
+
+err:
 	ret
