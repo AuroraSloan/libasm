@@ -150,7 +150,6 @@ void test_push_and_size(t_list **list)
 	char *nottwo = "not";
 
 	printf("\n%sFT_LIST_PUSH_FRONT%s\n", STAR, STAR);
-	
 	check_size_edgecase(*list);
 	ft_list_push_front(list, hey);
 	check_push_and_size(*list, hey, 1);
@@ -171,6 +170,16 @@ void test_push_and_size(t_list **list)
 	ft_list_push_front(NULL, NULL);
 	ft_list_push_front(list, nottwo);
 	check_push_and_size(*list, nottwo, 8);
+	ft_list_push_front(list, order);
+	check_push_and_size(*list, order, 9);
+}
+
+void test_sort(t_list **list)
+{
+	char *abc_order[] = {
+	}
+
+	ft_list_sort(&list, strcmp);
 }
 
 int main(void)
@@ -180,10 +189,6 @@ int main(void)
 
 	// test_atoi_base();
 	test_push_and_size(&list);
-	print_list(list);
-	ft_list_sort(&list, strcmp);
-	printf("sorting...\n");
-	print_list(list);
 	clear_list(list);
 	return EXIT_SUCCESS;
 }
