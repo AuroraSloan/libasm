@@ -44,7 +44,11 @@ ft_list_sort:
 	mov rsi, [r13 + t_list_data_offset]
 
 insert_sort:
+	push rdi
+	push rsi
 	call rbp
+	pop rsi
+	pop rdi
 	cmp eax, 0
 	jng next_cmp
 
