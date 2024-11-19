@@ -174,12 +174,47 @@ void test_push_and_size(t_list **list)
 	check_push_and_size(*list, order, 9);
 }
 
+void check_list_order(t_list *list)
+{
+	t_list *lst = list;
+	int i = 0;
+	char *abc_order[] = {
+		"alphabetical",
+		"hey",
+		"in",
+		"is",
+		"not",
+		"not",
+		"order",
+		"order",
+		"this",
+	};
+
+	while (lst)
+	{
+		if (strcmp(lst->data, abc_order[i++]) != 0)
+		{
+			printf("%sFAIL%s\n", RED, RESET);
+			return;
+		}
+		lst = lst->next;
+	}
+	printf("%d items - %sPASS%s\n", i, GREEN, RESET);
+}
+
 void test_sort(t_list **list)
 {
-	char *abc_order[] = {
-	}
 
-	ft_list_sort(&list, strcmp);
+	ft_list_sort(list, strcmp);
+	check_list_order(*list);
+	ft_list_sort(NULL, strcmp);
+	check_list_order(*list);
+	ft_list_sort(NULL, NULL);
+	check_list_order(*list);
+	ft_list_sort(list, NULL);
+	check_list_order(*list);
+	ft_list_sort(list, strcmp); // already sorted list
+	check_list_order(*list);
 }
 
 int main(void)
@@ -189,6 +224,7 @@ int main(void)
 
 	// test_atoi_base();
 	test_push_and_size(&list);
+	test_sort(&list);
 	clear_list(list);
 	return EXIT_SUCCESS;
 }
