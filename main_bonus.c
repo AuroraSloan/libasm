@@ -147,7 +147,6 @@ void test_push_and_size(t_list **list)
 	char *in = "in";
 	char *abc = "alphabetical";
 	char *order = "order";
-	char *nottwo = "not";
 
 	printf("\n%sFT_LIST_PUSH_FRONT%s\n", STAR, STAR);
 	check_size_edgecase(*list);
@@ -168,10 +167,6 @@ void test_push_and_size(t_list **list)
 	ft_list_push_front(list, order);
 	check_push_and_size(*list, order, 7);
 	ft_list_push_front(NULL, NULL);
-	ft_list_push_front(list, nottwo);
-	check_push_and_size(*list, nottwo, 8);
-	ft_list_push_front(list, order);
-	check_push_and_size(*list, order, 9);
 }
 
 void check_list_order(t_list *list)
@@ -217,14 +212,82 @@ void test_sort(t_list **list)
 	check_list_order(*list);
 }
 
+void check_size(t_list *list, int size)
+{
+	if (ft_list_size(list) == size)
+	{
+		printf("%sPASS%s\n", GREEN, RESET);
+		return;
+	}
+	printf("%sFAIL%s\n", RED, RESET);
+}
+
+void check_list_items(t_list *list, char **abc_order)
+{
+	t_list *lst = list;
+	int i = 0;
+
+	while (lst)
+	{
+		if (!abc_order[i] || strcmp(lst->data, abc_order[i++]) != 0)
+		{
+			printf("%sFAIL%s\n", RED, RESET);
+			return;
+		}
+		lst = lst->next;
+	}
+	printf("%d items - %sPASS%s\n", i, GREEN, RESET);
+}
+
+void test_remove(t_list **list)
+{
+	char *abc_order[] = {
+		"hey",
+		"in",
+		"is",
+		"order",
+		"order"
+	};
+
+	check_size(*list, 9);
+	// remove first item
+	ft_list_remove_if(list, "alphabetical", strcmp, free);
+	check_size(*list, 8);
+	// remove last item
+	ft_list_remove_if(list, "this", strcmp, free);
+	check_size(*list, 7);
+	// remove duplicate item
+	ft_list_remove_if(list, "not", strcmp, free);
+	check_size(*list, 5);
+
+	//edge cases 
+	ft_list_remove_if(NULL, "not", strcmp, free);
+	check_size(*list, 5);
+	ft_list_remove_if(list, NULL, strcmp, free);
+	check_size(*list, 5);
+	ft_list_remove_if(list, "not", NULL, free);
+	check_size(*list, 5);
+	ft_list_remove_if(list, "not", strcmp, NULL);
+	check_size(*list, 5);
+
+	print_list(*list);
+	check_list_items(*list, abc_order);
+}
+
 int main(void)
 {
 	t_list *list;
-	list = NULL;
+	list = NULL;	
+	char nottwo[] = "not";
+	char ordertwo[] = "order";
 
 	// test_atoi_base();
 	test_push_and_size(&list);
+	ft_list_push_front(&list, nottwo); // add duplicate item
+	ft_list_push_front(&list, ordertwo); // add duplicate item
 	test_sort(&list);
+	print_list(list);
+	test_remove(&list);
 	clear_list(list);
 	return EXIT_SUCCESS;
 }
