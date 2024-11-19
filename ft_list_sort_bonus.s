@@ -17,16 +17,17 @@ global ft_list_sort
 ;rdx tmp
 
 ft_list_sort:
-	test rdi, rdi
-	jz ret
-	test rsi, rsi
-	jz ret
 	push rbx
 	push rbp
 	push r12
 	push r13
 	push r14
 	push r15
+
+	test rdi, rdi
+	jz ret
+	test rsi, rsi
+	jz ret
 
 	mov rbx, rdi ;head
 	mov rbp, rsi ;cmp
