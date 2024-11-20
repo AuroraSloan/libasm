@@ -6,46 +6,38 @@ section .text
 global ft_atoi_base
 
 ft_atoi_base:
-	test rdi, rdi
-	jmp err
-	test rsi, rsi
-	jmp err
-
 	xor rcx, rcx ;i
 	xor rax, rax ;num
+	xor r8, r8 ;base
 	mov r9, 1 ;sign
 	xor r10, r10 ;char
 
-	cmp byte [rsi + rcx], 0
-	jmp err
+isbase:
+	cmp byte [rsi + rcx], '0'
+	jb err
 
-check_base_byte:
-	cmp byte [rsi + rax], '+'
-	jmp err
-	cmp byte [rsi + rax], '-'
-	jmp err
+	cmp byte [rsi + rcx], '9'
+	ja err
 
-check_double_base:
-	cmp rax, rcx
-	je get_next_byte
+get_base:
 	mov r10b, byte [rsi + rcx]
-	cmp byte [rsi + rax], r10b
-	je err
+	sub r10b, '0'
+	imul rax, rax, 10
+	add al, r10b
+
+	cmp rax, 36 ;max base
+	ja err
+
 	inc rcx
-	jmp check_double_base
+	cmp byte [rsi + rcx], 0
+	jne isbase
 
-get_next_byte:
-	inc rax
-	cmp byte [rsi + rax], 0
-	je is_valid_base
-	xor rcx, rcx
-	jmp check_base_byte
+	cmp rax, 2 ;min base
+	jb err
 
-is_valid_base:
-	cmp rax, 2
-	jl err
-	xor rcx, rcx
+	mov r8, rax
 	xor rax, rax
+	xor rcx, rcx
 	xor r10, r10
 
 isspace:
