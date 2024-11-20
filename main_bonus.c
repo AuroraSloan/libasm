@@ -19,6 +19,7 @@ extern int	ft_list_size(t_list *begin_list);
 extern void	ft_list_remove_if(t_list **begin_list, void *data_ref, int (*cmp)(), void (*free_fct)(void*));
 extern void	ft_list_sort(t_list **begin_list, int (*cmp)());
 
+/***************    ATOI    *****************/
 void compare_atoi_base(char *str, char *base, int cmp)
 {
 	int num = ft_atoi_base(str, base);
@@ -95,6 +96,7 @@ void test_atoi_base()
 	compare_atoi_base("-Z", "36", -35);
 }
 
+/***************    LIST TEST UTILS    *****************/
 void clear_list(t_list *list)
 {
 	t_list *node = NULL;
@@ -116,10 +118,33 @@ void print_list(t_list *list)
 	}
 }
 
+int is_correct_size(t_list *list, int size)
+{
+	return (ft_list_size(list) == size);
+}
+
+void check_list_items(t_list *list, char **abc_order)
+{
+	t_list *lst = list;
+	int i = 0;
+
+	while (lst)
+	{
+		if (!abc_order[i] || strcmp(lst->data, abc_order[i++]) != 0)
+		{
+			printf("%sFAIL%s\n", RED, RESET);
+			return;
+		}
+		lst = lst->next;
+	}
+	printf("%sPASS%s\n", GREEN, RESET);
+}
+
+/***************    PUSH & SIZE TESTS    *****************/
 void check_push_and_size(t_list *list, char *word, int size)
 {
 	char *first_word = (char *)list->data;
-	if (ft_list_size(list) == size && strcmp(first_word, word) == 0)
+	if (is_correct_size(list, size) && strcmp(first_word, word) == 0)
 	{
 		printf("%sPASS%s\n", GREEN, RESET);
 		return;
@@ -148,7 +173,7 @@ void test_push_and_size(t_list **list)
 	char *abc = "alphabetical";
 	char *order = "order";
 
-	printf("\n%sFT_LIST_PUSH_FRONT%s\n", STAR, STAR);
+	printf("\n%s PUSH FRONT & SIZE %s\n", STAR, STAR);
 	check_size_edgecase(*list);
 	ft_list_push_front(list, hey);
 	check_push_and_size(*list, hey, 1);
@@ -165,14 +190,14 @@ void test_push_and_size(t_list **list)
 	ft_list_push_front(list, abc);
 	check_push_and_size(*list, abc, 6);
 	ft_list_push_front(list, order);
-	check_push_and_size(*list, order, 7);
 	ft_list_push_front(NULL, NULL);
+	check_push_and_size(*list, order, 7);
 }
 
-void check_list_order(t_list *list)
+/***************    SORT TESTS   *****************/
+void test_sort(t_list **list)
 {
-	t_list *lst = list;
-	int i = 0;
+	printf("\n%s SORT %s\n", STAR, STAR);
 	char *abc_order[] = {
 		"alphabetical",
 		"hey",
@@ -185,58 +210,27 @@ void check_list_order(t_list *list)
 		"this",
 	};
 
-	while (lst)
-	{
-		if (strcmp(lst->data, abc_order[i++]) != 0)
-		{
-			printf("%sFAIL%s\n", RED, RESET);
-			return;
-		}
-		lst = lst->next;
-	}
-	printf("%d items - %sPASS%s\n", i, GREEN, RESET);
-}
-
-void test_sort(t_list **list)
-{
-
+	// sort
 	ft_list_sort(list, strcmp);
-	check_list_order(*list);
+	check_list_items(*list, abc_order);
+
+	// edge cases
 	ft_list_sort(NULL, strcmp);
-	check_list_order(*list);
 	ft_list_sort(NULL, NULL);
-	check_list_order(*list);
 	ft_list_sort(list, NULL);
-	check_list_order(*list);
 	ft_list_sort(list, strcmp); // already sorted list
-	check_list_order(*list);
+	check_list_items(*list, abc_order);
 }
 
+/***************    REMOVE    *****************/
 void check_size(t_list *list, int size)
 {
-	if (ft_list_size(list) == size)
+	if (is_correct_size(list, size))
 	{
 		printf("%sPASS%s\n", GREEN, RESET);
 		return;
 	}
 	printf("%sFAIL%s\n", RED, RESET);
-}
-
-void check_list_items(t_list *list, char **abc_order)
-{
-	t_list *lst = list;
-	int i = 0;
-
-	while (lst)
-	{
-		if (!abc_order[i] || strcmp(lst->data, abc_order[i++]) != 0)
-		{
-			printf("%sFAIL%s\n", RED, RESET);
-			return;
-		}
-		lst = lst->next;
-	}
-	printf("%d items - %sPASS%s\n", i, GREEN, RESET);
 }
 
 void test_remove(t_list **list)
@@ -249,6 +243,9 @@ void test_remove(t_list **list)
 		"order"
 	};
 
+	printf("\n%s REMOVE IF %s\n", STAR, STAR);
+
+	/**** TEST SIZE ****/ 
 	check_size(*list, 9);
 	// remove first item
 	ft_list_remove_if(list, "alphabetical", strcmp, free);
@@ -270,7 +267,7 @@ void test_remove(t_list **list)
 	ft_list_remove_if(list, "not", strcmp, NULL);
 	check_size(*list, 5);
 
-	print_list(*list);
+	/**** TEST CONTENT ****/
 	check_list_items(*list, abc_order);
 }
 
@@ -283,11 +280,15 @@ int main(void)
 
 	// test_atoi_base();
 	test_push_and_size(&list);
+	// print_list(list);
 	ft_list_push_front(&list, nottwo); // add duplicate item
 	ft_list_push_front(&list, ordertwo); // add duplicate item
+	// printf("\n\n");
+	// print_list(list);
 	test_sort(&list);
-	print_list(list);
+	// print_list(list);
 	test_remove(&list);
+	// print_list(list);
 	clear_list(list);
 	return EXIT_SUCCESS;
 }
