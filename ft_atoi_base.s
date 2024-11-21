@@ -3,9 +3,9 @@ BITS 64
 section .note.GNU-stack
 
 section .text
-global ft_atoi_base
+global ft_atoi_base_r
 
-ft_atoi_base:
+ft_atoi_base_r:
 	cmp rdi, 0
 	jmp err
 	cmp rsi, 2
