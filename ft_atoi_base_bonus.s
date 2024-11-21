@@ -7,45 +7,52 @@ global ft_atoi_base
 
 ft_atoi_base:
 	test rdi, rdi
-	jmp err
+	je err
 	test rsi, rsi
-	jmp err
+	je err
 
 	xor rcx, rcx ;i
 	xor rax, rax ;num
+	xor r8, r8 ;base
 	mov r9, 1 ;sign
-	xor r10, r10 ;char
+	xor r10, r10 ;tmp
+	xor r11, r11 ;base i
 
-	cmp byte [rsi + rcx], 0
-	jmp err
+	cmp byte [rsi + r8], 0
+	je err
 
-check_base_byte:
-	cmp byte [rsi + rax], '+'
-	jmp err
-	cmp byte [rsi + rax], '-'
-	jmp err
+check_base_char:
+	cmp byte [rsi + r8], '+'
+	je err
+	cmp byte [rsi + r8], '-'
+	je err
+	cmp byte [rsi + r8], 0x09
+	je err
+	cmp byte [rsi + r8], 0x0A
+	je err
+	cmp byte [rsi + r8], ' '
+	je err
 
-check_double_base:
-	cmp rax, rcx
-	je get_next_byte
+check_base_double_char:
+	cmp r8, rcx
+	je get_next_base_char
 	mov r10b, byte [rsi + rcx]
-	cmp byte [rsi + rax], r10b
+	cmp byte [rsi + r8], r10b
 	je err
 	inc rcx
-	jmp check_double_base
+	jmp check_base_double_char
 
-get_next_byte:
-	inc rax
-	cmp byte [rsi + rax], 0
+get_next_base_char:
+	inc r8
+	cmp byte [rsi + r8], 0
 	je is_valid_base
 	xor rcx, rcx
-	jmp check_base_byte
+	jmp check_base_char
 
 is_valid_base:
-	cmp rax, 2
+	cmp r8, 2
 	jl err
 	xor rcx, rcx
-	xor rax, rax
 	xor r10, r10
 
 isspace:
@@ -82,35 +89,21 @@ inc_rcx:
 check_char:
 	cmp byte [rdi + rcx], 0
 	je ret
+	xor r11, r11
 
-	mov r10b, byte [rdi + rcx]
-	sub r10b, '0'
-	cmp r10b, 0
-	jl ret
-	cmp r10b, 10
-	jl make_num
-
-	mov r10b, byte [rdi + rcx]
-	sub r10b, 'A'
-	add r10b, 10
-	cmp r10b, 10
-	jl ret
-	cmp r10b, r8b
-	jl make_num
-
-	mov r10b, byte [rdi + rcx]
-	sub r10b, 'a'
-	add r10b, 10
-	cmp r10b, 10
-	jl ret
-	cmp r10b, r8b
-	jl make_num
-
-	jmp ret
+get_digit_index:
+	xor r10, r10
+	mov r10b, byte [rsi + r11]
+	cmp r10, 0
+	je ret
+	cmp byte [rdi + rcx], r10b
+	je make_num
+	inc r11
+	jmp get_digit_index
 
 make_num:
 	imul rax, r8
-	add al, r10b
+	add rax, r11
 
 	cmp rax, 0
 	jl err
