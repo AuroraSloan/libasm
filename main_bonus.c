@@ -7,6 +7,18 @@
 #define GREEN "\033[0;32m"
 #define RESET "\033[0m"
 
+#define BASE2 "01"
+#define BASE3 "012"
+#define BASE5 "01234"
+#define BASE7 "0123456"
+#define BASE8 "01234567"
+#define BASE10 "0123456789"
+#define BASE12 "0123456789ab"
+#define BASE16 "0123456789abcdef"
+#define BASE20 "0123456789abcdefghij"
+#define BASE30 "0123456789abcdefghijklmnopqrst"
+#define BASE36 "0123456789abcdefghijklmnopqrstuvwxy@"
+
 typedef struct		s_list
 {
 	void		*data;
@@ -36,64 +48,68 @@ void test_atoi_base()
 	printf("\n%sFT_ATOI_BASE%s\n", STAR, STAR);
 
 	compare_atoi_base("12354", "", 0);
-	compare_atoi_base("12354", "1", 0);
-	compare_atoi_base("12354", "37", 0);
+	compare_atoi_base("12354", "8", 0);
+	compare_atoi_base("12354", "11", 0);
+	compare_atoi_base("12354", "1234256", 0);
+	compare_atoi_base("!!", BASE2, 0);
+	compare_atoi_base("", BASE2, 0);
 
 	printf("base 2 ----------\n");
-	compare_atoi_base("00000001", "2", 1);
-	compare_atoi_base("1010", "2", 10);
-	compare_atoi_base("-1010", "2", -10);
-	compare_atoi_base("11111111", "2", 255);
-	compare_atoi_base("     +11111111", "2", 255);
+	compare_atoi_base("00000001", BASE2, 1);
+	compare_atoi_base("1010", BASE2, 10);
+	compare_atoi_base("-1010", BASE2, -10);
+	compare_atoi_base("11111111", BASE2, 255);
+	compare_atoi_base("     +11111111", BASE2, 255);
 
 	printf("base 3 ----------\n");
-	compare_atoi_base("102", "3", 11);
-	compare_atoi_base("-102", "3", -11);
-	compare_atoi_base("  	-102", "3", -11);
+	compare_atoi_base("102", BASE3, 11);
+	compare_atoi_base("-102", BASE3, -11);
+	compare_atoi_base("  	-102", BASE3, -11);
 
 	printf("base 5 ----------\n");
-	compare_atoi_base("304", "5", 79);
-	compare_atoi_base("-304", "5", -79);
-	compare_atoi_base(" 304", "5", 79);
+	compare_atoi_base("304", BASE5, 79);
+	compare_atoi_base("-304", BASE5, -79);
+	compare_atoi_base(" 304", BASE5, 79);
 
 	printf("base 7 ----------\n");
-	compare_atoi_base("123", "7", 66);
-	compare_atoi_base("-123", "7", -66);
-	compare_atoi_base("      -123", "7", -66);
+	compare_atoi_base("123", BASE7, 66);
+	compare_atoi_base("-123", BASE7, -66);
+	compare_atoi_base("      -123", BASE7, -66);
 
 	printf("base 8 ----------\n");
-	compare_atoi_base("144", "8", 100);
-	compare_atoi_base("-144", "8", -100);
-	compare_atoi_base("377", "8", 255);
+	compare_atoi_base("144", BASE8, 100);
+	compare_atoi_base("-144", BASE8, -100);
+	compare_atoi_base("377", BASE8, 255);
 
 	printf("base 10 ----------\n");
-	compare_atoi_base("12345", "10", 12345);
-	compare_atoi_base("-12345", "10", -12345);
-	compare_atoi_base("2147483647", "10", 2147483647);
-	compare_atoi_base("--+9832", "10", 9832);
-	compare_atoi_base("-+-9832", "10", 9832);
-	compare_atoi_base("-+-+9832", "10", 9832);
-	compare_atoi_base("   -+--+8323aaas333", "10", -8323);
+	compare_atoi_base("12345", BASE10, 12345);
+	compare_atoi_base("-12345", BASE10, -12345);
+	compare_atoi_base("2147483647", BASE10, 2147483647);
+	compare_atoi_base("--+9832", BASE10, 9832);
+	compare_atoi_base("-+-9832", BASE10, 9832);
+	compare_atoi_base("-+-+9832", BASE10, 9832);
+	compare_atoi_base("    -+--+8323aaas333", BASE10, -8323);
+	compare_atoi_base("	-+--+8323aaas333", BASE10, -8323);
 
 	printf("base 12 ----------\n");
-	compare_atoi_base("A5", "12", 125);
-	compare_atoi_base("-A5", "12", -125);
+	compare_atoi_base("a5", BASE12, 125);
+	compare_atoi_base("-a5", BASE12, -125);
 
 	printf("base 16 ----------\n");
-	compare_atoi_base("1A3F", "16", 6719);
-	compare_atoi_base("-1A3F", "16", -6719);
+	compare_atoi_base("1a3f", BASE16, 6719);
+	compare_atoi_base("-1a3f", BASE16, -6719);
 
 	printf("base 20 ----------\n");
-	compare_atoi_base("J9", "20", 389);
-	compare_atoi_base("-J9", "20", -389);
+	compare_atoi_base("j9", BASE20, 389);
+	compare_atoi_base("-j9", BASE20, -389);
 
 	printf("base 30 ----------\n");
-	compare_atoi_base("T5", "30", 875);
-	compare_atoi_base("-T5", "30", -875);
+	compare_atoi_base("t5", BASE30, 875);
+	compare_atoi_base("-t5", BASE30, -875);
 
 	printf("base 36 ----------\n");
-	compare_atoi_base("Z", "36", 35);
-	compare_atoi_base("-Z", "36", -35);
+	compare_atoi_base("@", BASE36, 35);
+	compare_atoi_base("-@", BASE36, -35);
 }
 
 /***************    LIST TEST UTILS    *****************/
@@ -278,7 +294,7 @@ int main(void)
 	char nottwo[] = "not";
 	char ordertwo[] = "order";
 
-	// test_atoi_base();
+	test_atoi_base();
 	test_push_and_size(&list);
 	// print_list(list);
 	ft_list_push_front(&list, nottwo); // add duplicate item
