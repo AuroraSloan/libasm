@@ -6,39 +6,17 @@ section .text
 global ft_atoi_base
 
 ft_atoi_base:
+	cmp rdi, 0
+	jmp err
+	cmp rsi, 2
+	jl err
+	cmp rsi, 36
+	jg err
+
 	xor rcx, rcx ;i
 	xor rax, rax ;num
-	xor r8, r8 ;base
 	mov r9, 1 ;sign
 	xor r10, r10 ;char
-
-isbase:
-	cmp byte [rsi + rcx], '0'
-	jb err
-
-	cmp byte [rsi + rcx], '9'
-	ja err
-
-get_base:
-	mov r10b, byte [rsi + rcx]
-	sub r10b, '0'
-	imul rax, rax, 10
-	add al, r10b
-
-	cmp rax, 36 ;max base
-	ja err
-
-	inc rcx
-	cmp byte [rsi + rcx], 0
-	jne isbase
-
-	cmp rax, 2 ;min base
-	jb err
-
-	mov r8, rax
-	xor rax, rax
-	xor rcx, rcx
-	xor r10, r10
 
 isspace:
 	cmp byte [rdi + rcx], 0
@@ -87,7 +65,7 @@ check_char:
 	add r10b, 10
 	cmp r10b, 10
 	jl ret
-	cmp r10b, r8b
+	cmp r10b, sil
 	jl make_num
 
 	mov r10b, byte [rdi + rcx]
@@ -95,13 +73,13 @@ check_char:
 	add r10b, 10
 	cmp r10b, 10
 	jl ret
-	cmp r10b, r8b
+	cmp r10b, sil 
 	jl make_num
 
 	jmp ret
 
 make_num:
-	imul rax, r8
+	imul rax, rsi 
 	add al, r10b
 
 	cmp rax, 0
